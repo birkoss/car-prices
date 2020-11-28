@@ -10,8 +10,13 @@ urlpatterns = [
         name='makes'
     ),
     path(
-        'make/<str:make>',
-        api_views.make.as_view(),
-        name='make'
+        'make/<str:make>/models',
+        api_views.models.as_view(),
+        name='models'
+    ),
+    path(
+        'make/<str:make>/model/<str:model>/trims',
+        api_views.trims.as_view(),
+        name='trims'
     ),
 ]
