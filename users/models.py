@@ -10,7 +10,7 @@ from core.models import TimeStampedModel, UUIDModel
 from .managers import UserManager
 
 
-class User(PermissionsMixin, AbstractBaseUser):
+class User(PermissionsMixin, UUIDModel, TimeStampedModel, AbstractBaseUser):
     email = models.EmailField(
         verbose_name='Email Address',
         max_length=255,
@@ -30,6 +30,7 @@ class User(PermissionsMixin, AbstractBaseUser):
 
     def __str__(self):
         return self.email
+
 
 # Create an API token when an user is created
 @receiver(post_save, sender=User)
