@@ -1,8 +1,9 @@
 from .base import *
 
 
-ALLOWED_HOSTS = ['']
+ALLOWED_HOSTS = ['car.birkoss.com']
 
+DEBUG = True
 
 DATABASES = {
     'default': {
@@ -19,5 +20,5 @@ DATABASES = {
 }
 
 
-STATIC_URL = 'https://ABC/assets/api/'
-STATIC_ROOT = '/home/ABC/public_html/assets/api/'
+STATIC_URL = 'https://carcdn.birkoss.com/assets/api/'
+STATIC_ROOT = '/home/car/domains/carcdn.birkoss.com/public_html/assets/api/'
