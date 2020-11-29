@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 
 from ..models import Make, Model, Trim
 
-from .serializers import MakeSerializer, ModelSerializer, TrimSerializer
+from .serializers import MakeSerializer, ModelSerializer, TrimSerializer, TrimWriteSerializer  # nopep8
 
 
 class makes(APIView):
@@ -59,8 +59,40 @@ class trims(APIView):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request, make, model, format=None):
+    def post(self, request, make, model, format=None):
+        # Validate the make
+        make = fetch_make(slug=make)
+        if make is None:
+            return invalid_make()
 
+        # Validate the model
+        model = fetch_model(slug=model, make=make)
+        if model is None:
+            return invalid_model()
+
+        # Validate the a trim with this ID doesn't already exists
+        trim = Trim.objects.filter(
+            model=model,
+            foreign_id=request.data['foreign_id']
+        ).first()
+        if trim is not None:
+            return duplicate_trim()
+
+        serializer = TrimWriteSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save(model=model)
+
+            return Response({
+                'status': status.HTTP_200_OK,
+            })
+        else:
+            return Response({
+                "status": status.HTTP_400_BAD_REQUEST,
+                'message': serializer.errors,
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request, make, model, format=None):
         # Validate the make
         make = fetch_make(slug=make)
         if make is None:
@@ -108,4 +140,11 @@ def invalid_model():
     return Response({
         'status': status.HTTP_403_FORBIDDEN,
         'message': 'invalid model',
+    }, status=status.HTTP_403_FORBIDDEN)
+
+
+def duplicate_trim():
+    return Response({
+        'status': status.HTTP_403_FORBIDDEN,
+        'message': 'duplicate trim',
     }, status=status.HTTP_403_FORBIDDEN)
