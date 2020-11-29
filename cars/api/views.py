@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 
 from ..models import Make, Model, Trim
 
-from .serializers import MakeSerializer, ModelSerializer, TrimSerializer, TrimWriteSerializer  # nopep8
+from .serializers import MakeSerializer, ModelSerializer, ModelWriteSerializer, TrimSerializer, TrimWriteSerializer  # nopep8
 
 
 class makes(APIView):
@@ -32,6 +32,31 @@ class makes(APIView):
 class models(APIView):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, make, format=None):
+        # Validate the make
+        make = fetch_make(slug=make)
+        if make is None:
+            return create_error_response("This make is invalid")
+
+        # Validate the model with this Foreign ID doesn't already exists
+        model = Model.objects.filter(
+            make=make,
+            foreign_id=request.data['foreign_id']
+        ).first()
+        if model is not None:
+            return create_error_response("This model already exists")
+
+        serializer = ModelWriteSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save(make=make)
+
+            return Response({
+                'status': status.HTTP_200_OK,
+            })
+        else:
+            return create_error_response(serializer.error_messages)
 
     def get(self, request, make, format=None):
 
@@ -63,12 +88,12 @@ class trims(APIView):
         # Validate the make
         make = fetch_make(slug=make)
         if make is None:
-            return invalid_make()
+            return create_error_response("This make is invalid")
 
         # Validate the model
         model = fetch_model(slug=model, make=make)
         if model is None:
-            return invalid_model()
+            return create_error_response("This model is invalid")
 
         # Validate the a trim with this ID doesn't already exists
         trim = Trim.objects.filter(
@@ -76,7 +101,7 @@ class trims(APIView):
             foreign_id=request.data['foreign_id']
         ).first()
         if trim is not None:
-            return duplicate_trim()
+            return create_error_response("This trim already exists")
 
         serializer = TrimWriteSerializer(data=request.data)
 
@@ -87,10 +112,7 @@ class trims(APIView):
                 'status': status.HTTP_200_OK,
             })
         else:
-            return Response({
-                "status": status.HTTP_400_BAD_REQUEST,
-                'message': serializer.errors,
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return create_error_response(serializer.error_messages)
 
     def get(self, request, make, model, format=None):
         # Validate the make
@@ -129,22 +151,8 @@ def fetch_model(**kwargs):
     return model
 
 
-def invalid_make():
+def create_error_response(message):
     return Response({
-        'status': status.HTTP_403_FORBIDDEN,
-        'message': 'invalid make',
-    }, status=status.HTTP_403_FORBIDDEN)
-
-
-def invalid_model():
-    return Response({
-        'status': status.HTTP_403_FORBIDDEN,
-        'message': 'invalid model',
-    }, status=status.HTTP_403_FORBIDDEN)
-
-
-def duplicate_trim():
-    return Response({
-        'status': status.HTTP_403_FORBIDDEN,
-        'message': 'duplicate trim',
-    }, status=status.HTTP_403_FORBIDDEN)
+        'status': status.HTTP_400_BAD_REQUEST,
+        'message': message,
+    }, status=status.HTTP_400_BAD_REQUEST)

@@ -15,6 +15,12 @@ class ModelSerializer(serializers.ModelSerializer):
         fields = ['name', 'year', 'slug', 'foreign_id']
 
 
+class ModelWriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Model
+        fields = ['name', 'year', 'foreign_id']
+
+
 class TrimSerializer(serializers.ModelSerializer):
     class Meta:
         model = Trim
