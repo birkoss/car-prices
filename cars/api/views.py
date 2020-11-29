@@ -63,7 +63,7 @@ class models(APIView):
         # Validate the make
         make = fetch_make(slug=make)
         if make is None:
-            return invalid_make()
+            return create_error_response("This make is invalid")
 
         models = Model.objects.filter(
             make=make
@@ -118,12 +118,12 @@ class trims(APIView):
         # Validate the make
         make = fetch_make(slug=make)
         if make is None:
-            return invalid_make()
+            return create_error_response("This make is invalid")
 
         # Validate the model
         model = fetch_model(slug=model, make=make)
         if model is None:
-            return invalid_model()
+            return create_error_response("This model is invalid")
 
         trims = Trim.objects.filter(
             model=model
