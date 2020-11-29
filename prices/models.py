@@ -14,7 +14,7 @@ class Price(TimeStampedModel, UUIDModel, models.Model):
     data = models.JSONField(default=jsonfield_default_value)
 
 
-class PriceType(models.Model):
+class PriceType(TimeStampedModel, UUIDModel, models.Model):
     name = models.CharField(max_length=100, default='')
     slug = models.SlugField(max_length=100, blank=True, default='')
 
