@@ -16,9 +16,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='PriceType',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),  # nopep8
                 ('name', models.CharField(default='', max_length=100)),
-                ('slug', models.SlugField(blank=True, default='', max_length=100)),
+                ('slug', models.SlugField(blank=True, default='', max_length=100)),  # nopep8
             ],
         ),
         migrations.CreateModel(
@@ -26,9 +26,9 @@ class Migration(migrations.Migration):
             fields=[
                 ('date_added', models.DateTimeField(auto_now_add=True)),
                 ('date_updated', models.DateTimeField(auto_now=True)),
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
+                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),  # nopep8
                 ('data', models.JSONField()),
-                ('type', models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, to='prices.pricetype')),
+                ('type', models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, to='prices.pricetype')),  # nopep8
             ],
             options={
                 'abstract': False,

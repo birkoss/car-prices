@@ -66,7 +66,8 @@ class models(APIView):
             return create_error_response("This make is invalid")
 
         models = Model.objects.filter(
-            make=make
+            make=make,
+            is_active=True
         ).order_by("name", "year")
 
         serializer = ModelSerializer(
@@ -126,7 +127,8 @@ class trims(APIView):
             return create_error_response("This model is invalid")
 
         trims = Trim.objects.filter(
-            model=model
+            model=model,
+            is_active=True
         ).order_by("name")
 
         serializer = TrimSerializer(
@@ -146,6 +148,7 @@ def fetch_make(**kwargs):
 
 
 def fetch_model(**kwargs):
+    kwargs['is_active'] = True
     model = Model.objects.filter(**kwargs).first()
     return model
 

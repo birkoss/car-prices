@@ -17,6 +17,8 @@ class Trim(TimeStampedModel, UUIDModel, models.Model):
     nice_name = models.CharField(max_length=400, default='')
     foreign_id = models.CharField(max_length=255, default='', blank=True)
 
+    is_active = models.BooleanField(default=True)
+
     def __str__(self):
         name = self.model.__str__() + " "
         if self.nice_name != "":
@@ -44,6 +46,8 @@ class Model(TimeStampedModel, UUIDModel, models.Model):
     year = models.CharField(max_length=4, default='')
 
     foreign_id = models.CharField(max_length=255, default='')
+
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.make.name + " " + self.get_model_name()
