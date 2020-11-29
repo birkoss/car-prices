@@ -67,7 +67,7 @@ class models(APIView):
 
         models = Model.objects.filter(
             make=make
-        ).order_by("name")
+        ).order_by("name", "year")
 
         serializer = ModelSerializer(
             instance=models,
