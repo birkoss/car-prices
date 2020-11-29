@@ -27,6 +27,14 @@ class TrimSerializer(serializers.ModelSerializer):
         fields = ['name', 'nice_name', 'slug', 'foreign_id']
 
 
+class TrimModelSerializer(serializers.ModelSerializer):
+    model = ModelSerializer(read_only=True)
+
+    class Meta:
+        model = Trim
+        fields = ['name', 'nice_name', 'slug', 'foreign_id', 'model']
+
+
 class TrimWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Trim

@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 
 from ..models import Make, Model, Trim
 
-from .serializers import MakeSerializer, ModelSerializer, ModelWriteSerializer, TrimSerializer, TrimWriteSerializer  # nopep8
+from .serializers import MakeSerializer, ModelSerializer, ModelWriteSerializer, TrimSerializer, TrimModelSerializer, TrimWriteSerializer  # nopep8
 
 
 class makes(APIView):
@@ -121,6 +121,8 @@ class trims(APIView):
         if make is None:
             return create_error_response("This make is invalid")
 
+        serializer_class = TrimSerializer
+
         filters = Q()
         filters.add(Q(is_active=True), Q.AND)
 
@@ -131,13 +133,14 @@ class trims(APIView):
                 return create_error_response("This model is invalid")
             filters.add(Q(model=model), Q.AND)
         else:
+            serializer_class = TrimModelSerializer
             filters.add(Q(model__make=make), Q.AND)
 
         trims = Trim.objects.filter(
             filters
         ).order_by("model__name", "model__year", "name")
 
-        serializer = TrimSerializer(
+        serializer = serializer_class(
             instance=trims,
             many=True
         )
