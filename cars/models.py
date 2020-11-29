@@ -4,7 +4,7 @@ from core.helpers import slugify_model
 from core.models import TimeStampedModel, UUIDModel
 
 
-class Trim(models.Model):
+class Trim(TimeStampedModel, UUIDModel, models.Model):
     model = models.ForeignKey(
         'Model',
         on_delete=models.PROTECT,
