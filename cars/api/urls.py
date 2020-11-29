@@ -15,6 +15,11 @@ urlpatterns = [
         name='models'
     ),
     path(
+        'api/make/<str:make>/trims',
+        api_views.trims.as_view(),
+        name='models'
+    ),
+    path(
         'api/make/<str:make>/model/<str:model>/trims',
         api_views.trims.as_view(),
         name='trims'

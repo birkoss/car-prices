@@ -1,4 +1,4 @@
-from django.db.models import Count, Q
+from django.db.models import Q
 
 from rest_framework import status, authentication, permissions
 from rest_framework.response import Response
@@ -115,21 +115,27 @@ class trims(APIView):
         else:
             return create_error_response(serializer.error_messages)
 
-    def get(self, request, make, model, format=None):
+    def get(self, request, make, model=None, format=None):
         # Validate the make
         make = fetch_make(slug=make)
         if make is None:
             return create_error_response("This make is invalid")
 
-        # Validate the model
-        model = fetch_model(slug=model, make=make)
-        if model is None:
-            return create_error_response("This model is invalid")
+        filters = Q()
+        filters.add(Q(is_active=True), Q.AND)
+
+        # Validate the model (if provided)
+        if model is not None:
+            model = fetch_model(slug=model, make=make)
+            if model is None:
+                return create_error_response("This model is invalid")
+            filters.add(Q(model=model), Q.AND)
+        else:
+            filters.add(Q(model__make=make), Q.AND)
 
         trims = Trim.objects.filter(
-            model=model,
-            is_active=True
-        ).order_by("name")
+            filters
+        ).order_by("model__name", "model__year", "name")
 
         serializer = TrimSerializer(
             instance=trims,
