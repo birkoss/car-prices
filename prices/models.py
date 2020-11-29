@@ -1,5 +1,6 @@
 from django.db import models
 
+from core.helpers import jsonfield_default_value, slugify_model
 from core.models import TimeStampedModel, UUIDModel
 
 
@@ -10,7 +11,7 @@ class Price(TimeStampedModel, UUIDModel, models.Model):
         null=True
     )
 
-    data = models.JSONField()
+    data = models.JSONField(default=jsonfield_default_value)
 
 
 class PriceType(models.Model):

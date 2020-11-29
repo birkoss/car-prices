@@ -26,3 +26,7 @@ def slugify_model(model: models.Model, content: str) -> str:
         slug_candidate = '{}-{}'.format(slug_original, i)
 
     return slug_candidate
+
+
+def jsonfield_default_value():
+    return {}

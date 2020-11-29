@@ -1,3 +1,7 @@
 from django.contrib import admin
 
-# Register your models here.
+from prices.models import Price, PriceType
+
+
+admin.site.register(Price)
+admin.site.register(PriceType)
