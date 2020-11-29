@@ -146,7 +146,6 @@ def fetch_make(**kwargs):
 
 
 def fetch_model(**kwargs):
-    print(kwargs)
     model = Model.objects.filter(**kwargs).first()
     return model
 

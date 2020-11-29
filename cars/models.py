@@ -11,10 +11,10 @@ class Trim(models.Model):
         null=True
     )
 
-    name = models.CharField(max_length=255, default='')
-    slug = models.SlugField(max_length=255, blank=True, default='')
+    name = models.CharField(max_length=400, default='')
+    slug = models.SlugField(max_length=400, blank=True, default='')
 
-    nice_name = models.CharField(max_length=255, default='')
+    nice_name = models.CharField(max_length=400, default='')
     foreign_id = models.CharField(max_length=255, default='', blank=True)
 
     def __str__(self):
