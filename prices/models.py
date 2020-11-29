@@ -13,6 +13,8 @@ class Price(TimeStampedModel, UUIDModel, models.Model):
 
     data = models.JSONField(default=jsonfield_default_value)
 
+    hash = models.CharField(max_length=32, default='')
+
 
 class PriceType(TimeStampedModel, UUIDModel, models.Model):
     name = models.CharField(max_length=100, default='')
