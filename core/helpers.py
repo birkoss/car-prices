@@ -3,6 +3,9 @@ import itertools
 from django.db import models
 from django.utils.text import slugify
 
+from rest_framework import status
+from rest_framework.response import Response
+
 
 def create_error_response(message):
     return Response({

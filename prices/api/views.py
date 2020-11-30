@@ -40,31 +40,6 @@ class trim(APIView):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
-    def post(self, request, make, model, trim, format=None):
-        # Validate the make
-        make = fetch_make(slug=make)
-        if make is None:
-            return create_error_response("This make is invalid")
-
-        # Validate the model with this Foreign ID doesn't already exists
-        model = Model.objects.filter(
-            make=make,
-            foreign_id=request.data['foreign_id']
-        ).first()
-        if model is not None:
-            return create_error_response("This model already exists")
-
-        serializer = ModelWriteSerializer(data=request.data)
-
-        if serializer.is_valid():
-            serializer.save(make=make)
-
-            return Response({
-                'status': status.HTTP_200_OK,
-            })
-        else:
-            return create_error_response(serializer.error_messages)
-
     def get(self, request, make, model, trim, format=None):
         make = fetch_make(slug=make)
         if make is None:
@@ -91,3 +66,44 @@ class trim(APIView):
             'status': status.HTTP_200_OK,
             'makes': serializer.data
         }, status=status.HTTP_200_OK)
+
+
+class trim_type(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, make, model, trim, price_type, format=None):
+        make = fetch_make(slug=make)
+        if make is None:
+            return create_error_response("This make is invalid")
+
+        model = fetch_model(slug=model)
+        if model is None:
+            return create_error_response("This model is invalid")
+
+        trim = fetch_trim(slug=trim)
+        if trim is None:
+            return create_error_response("This trim is invalid")
+
+        price_type = PriceType.objects.filter(slug=price_type).first()
+        if price_type is None:
+            return create_error_response("This price type is invalid")
+
+        # Fetch the last prices for this trim
+        last_price = Price.objects.filter(trim=trim).order_by("-id").first()
+        if last_price is not None:
+            pass
+            # If it's not active, also check the last active
+            # return create_error_response("This model already exists")
+
+        serializer = PriceSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save(is_active=False, trim=trim, type=price_type)
+
+            return Response({
+                "status": status.HTTP_200_OK,
+                "message": "Created/Updated/Skipped"
+            })
+        else:
+            return create_error_response(serializer.error_messages)
