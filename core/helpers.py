@@ -4,6 +4,17 @@ from django.db import models
 from django.utils.text import slugify
 
 
+def create_error_response(message):
+    return Response({
+        'status': status.HTTP_400_BAD_REQUEST,
+        'message': message,
+    }, status=status.HTTP_400_BAD_REQUEST)
+
+
+def jsonfield_default_value():
+    return {}
+
+
 def slugify_model(model: models.Model, content: str) -> str:
     """
     Slugify a content and assume it's an unique slug in a model
@@ -26,7 +37,3 @@ def slugify_model(model: models.Model, content: str) -> str:
         slug_candidate = '{}-{}'.format(slug_original, i)
 
     return slug_candidate
-
-
-def jsonfield_default_value():
-    return {}

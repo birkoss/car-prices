@@ -72,3 +72,20 @@ class Make(TimeStampedModel, UUIDModel, models.Model):
         if not self.slug.strip():
             self.slug = slugify_model(Make, self.name)
         super(Make, self).save()
+
+
+def fetch_make(**kwargs):
+    make = Make.objects.filter(**kwargs).first()
+    return make
+
+
+def fetch_model(**kwargs):
+    kwargs['is_active'] = True
+    model = Model.objects.filter(**kwargs).first()
+    return model
+
+
+def fetch_trim(**kwargs):
+    kwargs['is_active'] = True
+    trim = Trim.objects.filter(**kwargs).first()
+    return trim

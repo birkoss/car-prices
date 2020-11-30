@@ -10,10 +10,16 @@ class Price(TimeStampedModel, UUIDModel, models.Model):
         on_delete=models.PROTECT,
         null=True
     )
+    trim = models.ForeignKey(
+        'cars.Trim',
+        on_delete=models.PROTECT,
+        null=True
+    )
 
     data = models.JSONField(default=jsonfield_default_value)
-
     hash = models.CharField(max_length=32, default='')
+
+    is_active = models.BooleanField(default=False)
 
 
 class PriceType(TimeStampedModel, UUIDModel, models.Model):
