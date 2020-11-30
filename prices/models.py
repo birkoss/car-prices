@@ -20,6 +20,7 @@ class Price(TimeStampedModel, UUIDModel, models.Model):
     hash = models.CharField(max_length=32, default='')
 
     is_active = models.BooleanField(default=False)
+    is_pending = models.BooleanField(default=False)
 
 
 class PriceType(TimeStampedModel, UUIDModel, models.Model):
