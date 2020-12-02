@@ -6,9 +6,27 @@ from rest_framework.views import APIView
 
 from core.helpers import create_error_response
 
-from ..models import Make, Model, Trim, fetch_make, fetch_model
+from ..models import Make, Model, Trim, fetch_make, fetch_model, fetch_trim
 
-from .serializers import MakeSerializer, ModelSerializer, ModelWriteSerializer, TrimSerializer, TrimModelSerializer, TrimWriteSerializer  # nopep8
+from .serializers import MakeSerializer, ModelSerializer, ModelWriteSerializer, TrimSerializer, TrimWriteSerializer  # nopep8
+
+
+class make(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, make_slug, format=None):
+        make = fetch_make(slug=make_slug)
+        if make is None:
+            return create_error_response("This make is invalid")
+
+        serializer = MakeSerializer(
+            instance=make, many=False)
+
+        return Response({
+            'status': status.HTTP_200_OK,
+            'make': serializer.data
+        }, status=status.HTTP_200_OK)
 
 
 class makes(APIView):
@@ -16,14 +34,9 @@ class makes(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):
-        filters = Q()
+        makes = Make.objects.all().order_by("name")
 
-        makes = Make.objects.filter(
-            filters
-        ).order_by("name")
-
-        serializer = MakeSerializer(
-            instance=makes, many=True)
+        serializer = MakeSerializer(instance=makes, many=True)
 
         return Response({
             'status': status.HTTP_200_OK,
@@ -31,13 +44,33 @@ class makes(APIView):
         }, status=status.HTTP_200_OK)
 
 
+class model(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, model_id, format=None):
+        model = fetch_model(id=model_id)
+        if model is None:
+            return create_error_response("This model is invalid")
+
+        serializer = ModelSerializer(
+            instance=model,
+            many=False
+        )
+
+        return Response({
+            'status': status.HTTP_200_OK,
+            'model': serializer.data
+        }, status=status.HTTP_200_OK)
+
+
 class models(APIView):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
-    def post(self, request, make, format=None):
+    def post(self, request, make_slug, format=None):
         # Validate the make
-        make = fetch_make(slug=make)
+        make = fetch_make(slug=make_slug)
         if make is None:
             return create_error_response("This make is invalid")
 
@@ -60,10 +93,10 @@ class models(APIView):
         else:
             return create_error_response(serializer.error_messages)
 
-    def get(self, request, make, format=None):
+    def get(self, request, make_slug, format=None):
 
         # Validate the make
-        make = fetch_make(slug=make)
+        make = fetch_make(slug=make_slug)
         if make is None:
             return create_error_response("This make is invalid")
 
@@ -87,14 +120,8 @@ class trims(APIView):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
-    def post(self, request, make, model, format=None):
-        # Validate the make
-        make = fetch_make(slug=make)
-        if make is None:
-            return create_error_response("This make is invalid")
-
-        # Validate the model
-        model = fetch_model(slug=model, make=make)
+    def post(self, request, model_id, format=None):
+        model = fetch_model(id=model_id)
         if model is None:
             return create_error_response("This model is invalid")
 
@@ -117,32 +144,28 @@ class trims(APIView):
         else:
             return create_error_response(serializer.error_messages)
 
-    def get(self, request, make, model=None, format=None):
-        # Validate the make
-        make = fetch_make(slug=make)
-        if make is None:
-            return create_error_response("This make is invalid")
-
-        serializer_class = TrimSerializer
-
+    def get(self, request, model_id=None, make_slug=None, format=None):
         filters = Q()
         filters.add(Q(is_active=True), Q.AND)
 
         # Validate the model (if provided)
-        if model is not None:
-            model = fetch_model(slug=model, make=make)
+        if model_id is not None:
+            model = fetch_model(id=model_id)
             if model is None:
                 return create_error_response("This model is invalid")
             filters.add(Q(model=model), Q.AND)
         else:
-            serializer_class = TrimModelSerializer
+            make = fetch_make(slug=make_slug)
+            if make is None:
+                return create_error_response("This make is invalid")
+
             filters.add(Q(model__make=make), Q.AND)
 
         trims = Trim.objects.filter(
             filters
         ).order_by("model__name", "model__year", "name")
 
-        serializer = serializer_class(
+        serializer = TrimSerializer(
             instance=trims,
             many=True
         )
@@ -153,15 +176,24 @@ class trims(APIView):
         }, status=status.HTTP_200_OK)
 
 
-def fetch_make(**kwargs):
-    make = Make.objects.filter(**kwargs).first()
-    return make
+class trim(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
+    def get(self, request, trim_id, format=None):
+        trim = fetch_trim(id=trim_id)
+        if trim is None:
+            return create_error_response("This trim is invalid")
 
-def fetch_model(**kwargs):
-    kwargs['is_active'] = True
-    model = Model.objects.filter(**kwargs).first()
-    return model
+        serializer = TrimSerializer(
+            instance=trim,
+            many=False
+        )
+
+        return Response({
+            'status': status.HTTP_200_OK,
+            'trim': serializer.data
+        }, status=status.HTTP_200_OK)
 
 
 def create_error_response(message):

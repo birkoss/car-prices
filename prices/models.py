@@ -5,16 +5,15 @@ from core.models import TimeStampedModel, UUIDModel
 
 
 class Price(TimeStampedModel, UUIDModel, models.Model):
-    type = models.ForeignKey(
-        'PriceType',
-        on_delete=models.PROTECT,
-        null=True
-    )
     trim = models.ForeignKey(
         'cars.Trim',
         on_delete=models.PROTECT,
         null=True
     )
+
+    msrp = models.FloatField()
+    delivery = models.FloatField()
+    taxes = models.FloatField()
 
     data = models.JSONField(default=jsonfield_default_value)
     hash = models.CharField(max_length=32, default='')
@@ -22,15 +21,5 @@ class Price(TimeStampedModel, UUIDModel, models.Model):
     is_active = models.BooleanField(default=False)
     is_pending = models.BooleanField(default=False)
 
-
-class PriceType(TimeStampedModel, UUIDModel, models.Model):
-    name = models.CharField(max_length=100, default='')
-    slug = models.SlugField(max_length=100, blank=True, default='')
-
     def __str__(self):
-        return self.name
-
-    def save(self, *args, **kwargs):
-        if not self.slug.strip():
-            self.slug = slugify_model(PriceType, self.__str__())
-        super(PriceType, self).save()
+        return self.trim.__str__()

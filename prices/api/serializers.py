@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from cars.api.serializers import TrimModelSerializer
+from cars.api.serializers import TrimSerializer
 
 from ..models import Price
 
@@ -8,11 +8,11 @@ from ..models import Price
 class PriceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Price
-        fields = ['data', 'hash']
+        fields = ['data', 'hash', 'msrp', 'taxes', 'delivery']
 
 
 class PriceTrimSerializer(serializers.ModelSerializer):
-    trim = TrimModelSerializer(read_only=True)
+    trim = TrimSerializer(read_only=True)
 
     class Meta:
         model = Price

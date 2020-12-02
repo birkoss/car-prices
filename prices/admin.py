@@ -1,7 +1,6 @@
 from django.contrib import admin
 
-from prices.models import Price, PriceType
+from prices.models import Price
 
 
 admin.site.register(Price)
-admin.site.register(PriceType)
