@@ -8,7 +8,7 @@ from ..models import Price
 class PriceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Price
-        fields = ['data', 'hash', 'msrp', 'taxes', 'delivery']
+        fields = ['id', 'data', 'hash', 'msrp', 'taxes', 'delivery']
 
 
 class PriceTrimSerializer(serializers.ModelSerializer):
@@ -16,4 +16,4 @@ class PriceTrimSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Price
-        fields = ['data', 'hash', 'trim']
+        fields = ['id', 'data', 'hash', 'msrp', 'taxes', 'delivery', 'trim']
